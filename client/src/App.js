@@ -27,6 +27,7 @@ function MainLayout({ user, users, setUser, allUsers }) {
   useEffect(() => {
     if (window.innerWidth <= 900 && location.pathname.startsWith("/chat/")) {
       setSidebarOpen(false);
+      setChatHeader(true);
     }
   }, [location.pathname]);
   useEffect(() => {
