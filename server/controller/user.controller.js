@@ -155,12 +155,13 @@ export const loginUser = async (req, res) => {
 
 // Get all users
 export const getAllUsers = async (req, res) => {
-  const users = await User.find({}, "_id username fullname");
+  const users = await User.find({}, "_id username fullname profilePic");
   res.json(
     users.map((u) => ({
       userId: u._id,
       username: u.username,
       fullname: u.fullname,
+      profilePic: u.profilePic,
     }))
   );
 };

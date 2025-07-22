@@ -50,6 +50,7 @@ export default function SingleChat({
   }, [socket, user.userId, toUserId]);
 
   const sendChatRequest = async () => {
+    setLoading(true);
     const res = await fetch(`${API_URL}/chat-request`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -59,9 +60,11 @@ export default function SingleChat({
     if (data.error) setStatus(data.error);
     else setStatus("Request sent!");
     setRequestStatus("pending");
+    setLoading(false);
   };
 
   const handleAccept = async () => {
+    setLoading(true);
     const res = await fetch(`${API_URL}/chat-request/respond`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -73,6 +76,7 @@ export default function SingleChat({
   };
 
   const handleReject = async () => {
+    setLoading(true);
     const res = await fetch(`${API_URL}/chat-request/respond`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -87,19 +91,20 @@ export default function SingleChat({
     setRequestStatus("none");
     setIsContact(isContact);
     setStatus(staus);
-    setUser();
+    setLoading(false);
+    // setUser();
   };
   useEffect(() => {
     // Handler for socket event
     console.log("Socket connected for chat requests");
     const handleChatRequestAccepted = ({ userId }) => {
       // Only update if the accepted user is the one you're chatting with
-      //   if (userId === toUserId) {
-      console.log("Chat request accepted by:", userId);
-      setRequestStatus("none");
-      setIsContact(true);
-      setStatus("Chat request accepted! You can now chat.");
-      //   }
+      if (userId === toUserId) {
+        console.log("Chat request accepted by:", userId);
+        setRequestStatus("none");
+        setIsContact(true);
+        setStatus("Chat request accepted! You can now chat.");
+      }
     };
 
     socket.on("chat_request_accepted", handleChatRequestAccepted);
@@ -107,7 +112,7 @@ export default function SingleChat({
     return () => {
       socket.off("chat_request_accepted", handleChatRequestAccepted);
     };
-  }, [toUserId]);
+  }, [toUserId, socket]);
 
   const fetchChat = () => {
     setChatHeader(false);
@@ -424,12 +429,21 @@ export default function SingleChat({
                   </span>{" "}
                   to start chatting.
                 </div>
-                <button
-                  className="chat-action-btn send"
-                  onClick={sendChatRequest}
-                >
-                  Send Chat Request
-                </button>
+                {loading ? (
+                  <div
+                    className="chat-action-btn send"
+                    style={{ display: "inline-block" }}
+                  >
+                    Loading...
+                  </div>
+                ) : (
+                  <button
+                    className="chat-action-btn send"
+                    onClick={sendChatRequest}
+                  >
+                    Send Chat Request
+                  </button>
+                )}
               </div>
             )}
             {requestStatus === "pending" && (
@@ -439,30 +453,38 @@ export default function SingleChat({
             )}
             {requestStatus === "received" && (
               <>
-                <div>
-                  <div
-                    style={{ color: "#888", fontWeight: 500, marginBottom: 10 }}
-                  >
-                    <span style={{ color: "#e53935", fontWeight: 600 }}>
-                      {toUser.fullname}
-                    </span>{" "}
-                    has sent you a chat request. Please accept for start
-                    chatting.
-                  </div>
-                  <button
-                    className="chat-action-btn accept"
-                    onClick={handleAccept}
-                    style={{ marginRight: 10 }}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    className="chat-action-btn reject"
-                    onClick={handleReject}
-                  >
-                    Reject
-                  </button>
+                <div
+                  style={{ color: "#888", fontWeight: 500, marginBottom: 10 }}
+                >
+                  <span style={{ color: "#e53935", fontWeight: 600 }}>
+                    {toUser.fullname}
+                  </span>{" "}
+                  has sent you a chat request. Please accept for start chatting.
                 </div>
+                {loading ? (
+                  <div
+                    className="chat-action-btn accept"
+                    style={{ display: "inline-block" }}
+                  >
+                    Loading...
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      className="chat-action-btn accept"
+                      onClick={handleAccept}
+                      style={{ marginRight: 10 }}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="chat-action-btn reject"
+                      onClick={handleReject}
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
               </>
             )}
             {status && (
