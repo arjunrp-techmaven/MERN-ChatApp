@@ -69,7 +69,7 @@ Features include one-to-one messaging, chat requests, file sharing, profile pict
 - Create a `.env` file in `/client` with:
 
       REACT_APP_API_URL=http://localhost:5000/api
-      REACT_APP_SOCKET_URL = http://192.168.1.2:5000
+      REACT_APP_SOCKET_URL = http://localhost:5000
 
 - Start the frontend:
 
