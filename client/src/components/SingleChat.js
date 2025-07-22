@@ -150,9 +150,9 @@ export default function SingleChat({
     return () => socket.off("private_message", handler);
   }, [toUserId, user.userId]);
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat]);
+  //   useEffect(() => {
+  //     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }, [chat]);
   const [loading, setLoading] = useState(false);
   const sendMessage = async (e) => {
     e.preventDefault();
