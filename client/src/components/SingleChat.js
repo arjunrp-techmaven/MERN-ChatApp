@@ -334,7 +334,7 @@ export default function SingleChat({ user, setUser, onOpenSidebar }) {
         </button>
       </div>
       <div className="chat-messages">
-        {chat?.map((msg, idx) => (
+        {[...chat].reverse().map((msg, idx) => (
           <div
             key={msg.id || idx}
             className={`message-row${msg.from === user.userId ? " me" : ""}`}

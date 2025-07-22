@@ -357,7 +357,7 @@ body {
     min-height: 400px;
   }
   .mobile-navbar {
-    display: none;
+    /* display: none; */
     align-items: center;
     background: #1c659e;
     color: #fff;
