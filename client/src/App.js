@@ -25,12 +25,6 @@ function MainLayout({ user, users, setUser, allUsers }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (window.innerWidth <= 900 && location.pathname.startsWith("/chat/")) {
-      setSidebarOpen(false);
-      setChatHeader(true);
-    }
-  }, [location.pathname]);
-  useEffect(() => {
     // Highlight selected chat in sidebar
     if (location.pathname.startsWith("/chat/")) {
       setSelectedUserId(location.pathname.split("/chat/")[1]);
@@ -38,6 +32,18 @@ function MainLayout({ user, users, setUser, allUsers }) {
       setSelectedUserId(null);
     }
   }, [location]);
+  useEffect(() => {
+    if (window.innerWidth <= 900 && location.pathname.startsWith("/chat/")) {
+      setSidebarOpen(false);
+    }
+  }, [location.pathname]);
+  useEffect(() => {
+    if (selectedUserId && location.pathname === "/chat/" + selectedUserId) {
+      setChatHeader(false);
+    } else {
+      setChatHeader(true);
+    }
+  }, [selectedUserId]);
   const isMobile = window.innerWidth <= 900;
   return (
     <div className="app-container">
@@ -104,7 +110,10 @@ function MainLayout({ user, users, setUser, allUsers }) {
           onSelectUser={(uid) => {
             setSelectedUserId(uid);
             navigate(`/chat/${uid}`);
-            if (isMobile) setSidebarOpen(false); // Hide sidebar after selecting a chat on mobile
+            if (isMobile) {
+              setChatHeader(false);
+              setSidebarOpen(false); // Hide sidebar after selecting a chat on mobile
+            }
           }}
         />
       </div>
