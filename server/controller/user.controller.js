@@ -5,11 +5,13 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import { ChatRequest } from "../models/chat.model.js";
 
+const email = process.env.EMAIL || "info.chatapp@gmail.com";
+const password = process.env.PASSWORD || "";
 const transporter = nodemailer.createTransport({
   service: "gmail", // or your email provider
   auth: {
-    user: "arjunrp.techmaven@gmail.com",
-    pass: "wmhx dupt wfsn bgmp",
+    user: email,
+    pass: password,
   },
 });
 
