@@ -186,7 +186,7 @@ export const uploadFile = async (req, res, io) => {
     from,
     to,
     message: req.body.message || "",
-    fileUrl: `/uploads/${req.file.filename}`,
+    fileUrl: `/uploads/chats/${req.file.filename}`,
     fileName: req.file.originalname,
     fileType: req.file.mimetype,
   });
