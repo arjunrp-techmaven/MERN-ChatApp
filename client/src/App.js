@@ -20,6 +20,7 @@ const socket = io(SOCKET_URL);
 function MainLayout({ user, users, setUser, allUsers }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatHeader, setChatHeader] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ function MainLayout({ user, users, setUser, allUsers }) {
   return (
     <div className="app-container">
       {/* Mobile Navbar */}
-      {isMobile && (
+      {isMobile && chatHeader && (
         <div className="mobile-navbar">
           <button
             className="menu-btn"
@@ -128,6 +129,9 @@ function MainLayout({ user, users, setUser, allUsers }) {
                 user={user}
                 setUser={setUser}
                 onOpenSidebar={() => setSidebarOpen(true)}
+                setChatHeader={(val) => {
+                  setChatHeader(val);
+                }}
               />
             }
           />

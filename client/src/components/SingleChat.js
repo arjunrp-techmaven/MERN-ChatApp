@@ -7,7 +7,12 @@ import deleteIcon from "../assets/icons/trash-solid.svg";
 
 const socket = io(SOCKET_URL);
 
-export default function SingleChat({ user, setUser, onOpenSidebar }) {
+export default function SingleChat({
+  user,
+  setUser,
+  onOpenSidebar,
+  setChatHeader,
+}) {
   const { userId: toUserId } = useParams();
   const [toUser, setToUser] = useState(null);
   const [message, setMessage] = useState("");
@@ -20,6 +25,9 @@ export default function SingleChat({ user, setUser, onOpenSidebar }) {
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setChatHeader(false);
+  }, []);
   useEffect(() => {
     // Fetch if user is contact
     const fetchContactStatus = async () => {
@@ -102,6 +110,7 @@ export default function SingleChat({ user, setUser, onOpenSidebar }) {
   }, [toUserId]);
 
   const fetchChat = () => {
+    setChatHeader(false);
     fetch(`${API_URL}/messages/${user.userId}/${toUserId}`)
       .then((res) => res.json())
       .then((messages) => {
@@ -263,7 +272,12 @@ export default function SingleChat({ user, setUser, onOpenSidebar }) {
         <div style={{ display: "flex", alignItems: "center" }}>
           <button
             onClick={() => {
-              window.innerWidth <= 900 ? onOpenSidebar() : navigate("/chats");
+              if (window.innerWidth <= 900) {
+                setChatHeader(true);
+                onOpenSidebar();
+              } else {
+                navigate("/chats");
+              }
             }}
             style={{ marginRight: 16, background: "none", border: "none" }}
             title="Back to Chats"
