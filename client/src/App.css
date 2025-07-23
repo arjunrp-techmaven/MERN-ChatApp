@@ -126,11 +126,20 @@ body {
   margin-bottom: 2px;
 }
 
-.chat-input-area {
+/* .chat-input-area {
   display: flex;
   padding: 15px 20px;
   background: #f6f6f6;
   border-top: 1px solid #ddd;
+} */
+.chat-input-area {
+  position: sticky;
+  display: flex;
+  bottom: 0;
+  background: #f6f6f6;
+  border-top: 1px solid #ddd;
+  padding: 15px 20px;
+  z-index: 10;
 }
 
 .chat-input-area input {
@@ -161,7 +170,7 @@ body {
 
 .profile-container {
   max-width: 400px;
-  margin: 40px auto;
+  margin: 50px auto;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -325,6 +334,7 @@ body {
 @media (max-width: 900px) {
   .app-container {
     flex-direction: column;
+    /* margin-top: 30px; */
   }
   .sidebar {
     display: none;
@@ -344,6 +354,7 @@ body {
   .sidebar.open {
     display: block;
     animation: slideIn 0.2s;
+    /* margin-top: 30px; */
   }
   @keyframes slideIn {
     from {
@@ -375,6 +386,9 @@ body {
   }
   .chat-request-info {
     left: 50%;
+  }
+  .profile-container {
+    margin: 50px 10px auto;
   }
 }
 @media (min-width: 901px) {

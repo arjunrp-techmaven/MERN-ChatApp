@@ -155,9 +155,9 @@ export default function SingleChat({
     return () => socket.off("private_message", handler);
   }, [toUserId, user.userId]);
 
-  //   useEffect(() => {
-  //     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   }, [chat]);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat]);
   const [loading, setLoading] = useState(false);
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -279,7 +279,8 @@ export default function SingleChat({
             onClick={() => {
               if (window.innerWidth <= 900) {
                 setChatHeader(true);
-                onOpenSidebar();
+                // onOpenSidebar();
+                navigate("/chats");
               } else {
                 navigate("/chats");
               }
@@ -352,6 +353,7 @@ export default function SingleChat({
           🧹 Clear Chat
         </button>
       </div>
+      <div ref={chatEndRef} />
       <div className="chat-messages">
         {[...chat].reverse().map((msg, idx) => (
           <div
@@ -494,7 +496,6 @@ export default function SingleChat({
             )}
           </div>
         )}
-        <div ref={chatEndRef} />
       </div>
       {/* Only show input if contacts */}
       {isContact && (
