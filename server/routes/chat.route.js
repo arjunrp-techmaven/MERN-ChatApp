@@ -5,6 +5,7 @@ import {
   deleteMessage,
   getChatRequests,
   getMessages,
+  markReadMessages,
   respondChatRequest,
   sendChatRequest,
   uploadFile,
@@ -38,6 +39,7 @@ export default function chatRoutes(io) {
   router.post("/upload", upload.single("file"), (req, res) =>
     uploadFile(req, res, io)
   );
+  router.patch("/messages/mark-read", markReadMessages);
 
   return router;
 }

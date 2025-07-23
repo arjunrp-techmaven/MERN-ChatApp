@@ -205,3 +205,10 @@ export const uploadFile = async (req, res, io) => {
   }
   res.json(msg);
 };
+export const markReadMessages = async (req, res) => {
+  const { from, to } = req.body;
+  await Message.updateMany({ from, to, read: false }, { $set: { read: true } });
+  const fromUser = await User.findById(request.from);
+  io.to(fromUser.socketId).emit("contacts_updated");
+  res.json({ success: true });
+};

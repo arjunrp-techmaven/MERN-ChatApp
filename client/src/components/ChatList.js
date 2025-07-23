@@ -10,9 +10,19 @@ export default function ChatList({
 }) {
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const sortedUsers = [...users].sort((a, b) => {
+    // If both have lastMsgTime, sort by it
+    if (a.lastMsgTime && b.lastMsgTime) {
+      return new Date(b.lastMsgTime) - new Date(a.lastMsgTime);
+    }
+    // If only one has lastMsgTime, put that one first
+    if (a.lastMsgTime) return -1;
+    if (b.lastMsgTime) return 1;
+    // Otherwise, keep original order
+    return 0;
+  });
   // Filter contacts for chat list
-  const filteredContacts = users
+  const filteredContacts = sortedUsers
     .filter((u) => u.userId !== user.userId)
     .filter(
       (u) =>

@@ -142,7 +142,14 @@ export default function SingleChat({
       .then(setToUser);
 
     fetchChat();
-
+    const userData = {
+      from: user.userId,
+      to: toUserId,
+    };
+    fetch(`${API_URL}/messages/mark-read`, {
+      method: "PATCH",
+      body: userData,
+    }).then((res) => res.json());
     socket.emit("login", { userId: user.userId });
 
     const handler = ({ from, message }) => {
