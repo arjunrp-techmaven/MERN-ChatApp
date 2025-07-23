@@ -34,11 +34,13 @@ body {
 .search-box {
   padding: 10px 20px;
   background: #f6f6f6;
+  display: flex;
+  align-items: center;
 }
 
 .search-box input {
   width: 100%;
-  padding: 8px 7px;
+  padding: 8px 10px;
   border-radius: 20px;
   border: 1px solid #ddd;
   outline: none;
@@ -100,7 +102,9 @@ body {
   flex-direction: column;
   align-items: flex-start;
 }
-
+.message-row.selected {
+  background: #d1e7fd !important;
+}
 .message-row.me {
   align-items: flex-end;
 }

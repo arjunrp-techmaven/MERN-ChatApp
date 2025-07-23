@@ -203,21 +203,45 @@ export default function SingleChat({
     setMessage("");
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    if (!window.confirm("Delete this message for you?")) return;
-    const res = await fetch(`${API_URL}/messages/${messageId}/delete`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.userId }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      //   setChat((prev) => prev.filter((msg) => msg.id !== messageId));
-      fetchChat();
-    } else {
-      alert(data.error || "Failed to delete message");
-    }
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const longPressTimeout = useRef();
+  const handleMessageMouseDown = (msgId) => {
+    longPressTimeout.current = setTimeout(() => {
+      setSelectedMessages((prev) =>
+        prev.includes(msgId) ? prev : [...prev, msgId]
+      );
+    }, 500); // 500ms for long press
   };
+
+  const handleMessageMouseUp = () => {
+    clearTimeout(longPressTimeout.current);
+  };
+  const handleSelectMessage = (msgId) => {
+    setSelectedMessages((prev) =>
+      prev.includes(msgId)
+        ? prev.filter((id) => id !== msgId)
+        : [...prev, msgId]
+    );
+  };
+  const handleDeleteSelected = async () => {
+    if (!window.confirm("Delete selected messages for you?")) return;
+    for (const messageId of selectedMessages) {
+      await fetch(`${API_URL}/messages/${messageId}/delete`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.userId }),
+      });
+    }
+    setChat((prev) => prev.filter((msg) => !selectedMessages.includes(msg.id)));
+    setSelectedMessages([]);
+  };
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setSelectedMessages([]);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   const handleClearMessages = async () => {
     if (!window.confirm("Clear all messages for you?")) return;
     const res = await fetch(`${API_URL}/messages/clear`, {
@@ -251,6 +275,21 @@ export default function SingleChat({
       setFilePreview(null);
     }
   };
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef();
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
   if (!toUser) return <div className="chat-header">Loading...</div>;
   //   console.log(chat, "chat");
@@ -279,7 +318,7 @@ export default function SingleChat({
             onClick={() => {
               if (window.innerWidth <= 900) {
                 setChatHeader(true);
-                // onOpenSidebar();
+                onOpenSidebar();
                 navigate("/chats");
               } else {
                 navigate("/chats");
@@ -338,31 +377,139 @@ export default function SingleChat({
 
           <span>{toUser.fullname || toUser.username}</span>
         </div>
-        <button
-          onClick={handleClearMessages}
-          style={{
-            marginLeft: 16,
-            background: "none",
-            border: "none",
-            color: "#e53935",
-            cursor: "pointer",
-            fontSize: "1.1em",
-          }}
-          title="Clear chat"
-        >
-          🧹 Clear Chat
-        </button>
+        <div>
+          {selectedMessages.length > 0 && (
+            //   <button
+            //     onClick={handleDeleteSelected}
+            //     style={{
+            //       background: "#e53935",
+            //       color: "#fff",
+            //       border: "none",
+            //       borderRadius: "50%",
+            //       width: 36,
+            //       height: 36,
+            //       fontSize: "1.2em",
+            //       cursor: "pointer",
+            //       marginRight: 12,
+            //     }}
+            //     title="Delete selected"
+            //   >
+            //     🗑️
+            //   </button>
+            <button
+              onClick={handleDeleteSelected}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              title="Delete for me"
+            >
+              <img
+                src={deleteIcon}
+                alt="Delete"
+                style={{
+                  width: 16,
+                  height: 16,
+                  filter: "invert(100%) brightness(200%)",
+                }}
+              />
+            </button>
+          )}
+          {/* <button
+            onClick={handleClearMessages}
+            style={{
+              marginLeft: 16,
+              background: "none",
+              border: "none",
+              color: "#e53935",
+              cursor: "pointer",
+              fontSize: "1.1em",
+            }}
+            title="Clear chat"
+          >
+            🧹 Clear Chat
+          </button> */}
+          <button
+            onClick={() => setMenuOpen((open) => !open)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontSize: "1.5em",
+              marginLeft: 12,
+              cursor: "pointer",
+            }}
+            title="Menu"
+          >
+            &#8942; {/* This is ⋮ vertical dots */}
+          </button>
+          {menuOpen && (
+            <div
+              ref={menuRef}
+              style={{
+                position: "absolute",
+                top: 48,
+                right: 0,
+                background: "#fff",
+                borderRadius: 8,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                zIndex: 10,
+                minWidth: 120,
+              }}
+            >
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleClearMessages();
+                }}
+                style={{
+                  width: "100%",
+                  padding: "10px 16px",
+                  background: "none",
+                  border: "none",
+                  textAlign: "left",
+                  color: "#e53935",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  borderRadius: 8,
+                }}
+              >
+                🧹 Clear Chat
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div ref={chatEndRef} />
       <div className="chat-messages">
         {[...chat].reverse().map((msg, idx) => (
+          //   <div
+          //     key={msg.id || idx}
+          //     className={`message-row${msg.from === user.userId ? " me" : ""}`}
+          //     style={{ position: "relative" }}
+          //   >
           <div
             key={msg.id || idx}
-            className={`message-row${msg.from === user.userId ? " me" : ""}`}
-            style={{ position: "relative" }}
+            className={`message-row${msg.from === user.userId ? " me" : ""} ${
+              selectedMessages.includes(msg.id) ? "selected" : ""
+            }`}
+            onMouseDown={() => handleMessageMouseDown(msg.id)}
+            onMouseUp={handleMessageMouseUp}
+            onTouchStart={() => handleMessageMouseDown(msg.id)}
+            onTouchEnd={handleMessageMouseUp}
+            onClick={() =>
+              selectedMessages.length > 0 && handleSelectMessage(msg.id)
+            }
+            style={{
+              background: selectedMessages.includes(msg.id)
+                ? "#d1e7fd"
+                : undefined,
+              cursor: selectedMessages.length > 0 ? "pointer" : "default",
+            }}
           >
             <div style={{ flexDirection: "row-reverse", display: "flex" }}>
-              <button
+              {/* <button
                 onClick={() => handleDeleteMessage(msg.id)}
                 style={{
                   background: "none",
@@ -376,7 +523,7 @@ export default function SingleChat({
                   alt="Delete"
                   style={{ width: 16, height: 16 }}
                 />
-              </button>
+              </button> */}
               <div className="message-bubble">
                 {msg.fileUrl && (
                   <div style={{ marginTop: 8 }}>

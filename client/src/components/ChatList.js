@@ -124,34 +124,133 @@ export default function ChatList({
               padding: "10px 16px",
               cursor: "pointer",
               borderBottom: "1px solid #f0f0f0",
+              background: selectedUserId === u.userId ? "#e0f2f1" : "#fff",
             }}
           >
-            {u.profilePic ? (
-              <img
-                src={`${API_URL}${u.profilePic}`}
-                alt={u.fullname}
-                className="user-avatar"
-              />
-            ) : (
-              <img
-                src={`https://ui-avatars.com/api/?name=${u.fullname}`}
-                alt={u.fullname}
-                className="user-avatar"
-              />
-            )}
-            {u.fullname}
-            {u.status === "pending_sent" && (
-              <span style={{ color: "#888", fontSize: "0.9em", marginLeft: 8 }}>
-                (Request sent)
-              </span>
-            )}
-            {u.status === "pending_received" && (
-              <span
-                style={{ color: "#43cea2", fontSize: "0.9em", marginLeft: 8 }}
+            {/* Avatar */}
+            <div style={{ marginRight: 12 }}>
+              {u.profilePic ? (
+                <img
+                  src={`${API_URL}${u.profilePic}`}
+                  alt={u.fullname}
+                  className="user-avatar"
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <img
+                  src={`https://ui-avatars.com/api/?name=${u.fullname}`}
+                  alt={u.fullname}
+                  className="user-avatar"
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </div>
+            {/* Main content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                (Request received)
-              </span>
-            )}
+                <span
+                  style={{
+                    fontWeight: 500,
+                    fontSize: "1.05em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {u.fullname}
+                </span>
+                {/* Time */}
+                {u.lastMsgTime && (
+                  <span
+                    style={{ fontSize: "0.85em", color: "#888", marginLeft: 8 }}
+                  >
+                    {new Date(u.lastMsgTime).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                {/* Last message */}
+                <span
+                  style={{
+                    color: "#888",
+                    fontSize: "0.97em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: 160,
+                  }}
+                >
+                  {u.lastMsg}
+                  {u.status === "pending_sent" && (
+                    <span
+                      style={{
+                        color: "#888",
+                        fontSize: "0.9em",
+                        marginLeft: 8,
+                      }}
+                    >
+                      (Request sent)
+                    </span>
+                  )}
+                  {u.status === "pending_received" && (
+                    <span
+                      style={{
+                        color: "#43cea2",
+                        fontSize: "0.9em",
+                        marginLeft: 8,
+                      }}
+                    >
+                      (Request received)
+                    </span>
+                  )}
+                </span>
+                {/* Unread count */}
+                {u.unreadCount > 0 && (
+                  <span
+                    style={{
+                      background: "#43cea2",
+                      color: "#fff",
+                      borderRadius: "50%",
+                      minWidth: 22,
+                      height: 22,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.9em",
+                      marginLeft: 8,
+                      padding: "0 6px",
+                    }}
+                  >
+                    {u.unreadCount}
+                  </span>
+                )}
+              </div>
+            </div>
           </li>
         ))}
       </ul>

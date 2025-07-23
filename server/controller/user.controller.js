@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
-import { ChatRequest } from "../models/chat.model.js";
+import { ChatRequest, Message } from "../models/chat.model.js";
 
 const email = process.env.EMAIL_USER || "info.chatapp@gmail.com";
 const password = process.env.EMAIL_PASS || "";
@@ -244,8 +244,45 @@ export const chatContacts = async (req, res) => {
     };
   });
 
+  // --- Add last message, time, and unread count for contacts ---
+  const contactsWithLastMsg = await Promise.all(
+    contacts.map(async (contact) => {
+      // Last message between user and contact
+      const lastMsg = await Message.findOne({
+        $or: [
+          { from: userId, to: contact.userId },
+          { from: contact.userId, to: userId },
+        ],
+      })
+        .sort({ timestamp: -1 })
+        .lean();
+
+      // Unread count (messages sent to userId, not read)
+      const unreadCount = await Message.countDocuments({
+        from: contact.userId,
+        to: userId,
+        read: false, // You need a 'read' field in your Message schema
+      });
+
+      return {
+        ...contact,
+        lastMsg: lastMsg ? lastMsg.message : "",
+        lastMsgTime: lastMsg ? lastMsg.timestamp : null,
+        unreadCount,
+      };
+    })
+  );
+
+  // For pending users, you can leave lastMsg, lastMsgTime, unreadCount empty or null
+  const pendingUsersWithMsg = pendingUsersWithStatus.map((u) => ({
+    ...u,
+    lastMsg: "",
+    lastMsgTime: null,
+    unreadCount: 0,
+  }));
+
   // Combine and return
-  res.json([...contacts, ...pendingUsersWithStatus]);
+  res.json([...contactsWithLastMsg, ...pendingUsersWithMsg]);
 };
 
 // Get user profile

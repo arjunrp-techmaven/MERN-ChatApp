@@ -9,6 +9,7 @@ const messageSchema = new mongoose.Schema({
   fileType: String,
   timestamp: { type: Date, default: Date.now },
   deletedBy: [String],
+  read: { type: Boolean, default: false },
 });
 
 const chatRequestSchema = new mongoose.Schema({

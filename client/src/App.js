@@ -192,11 +192,13 @@ function App() {
       fetchAllUsers();
       fetchUsers();
     };
+    socket.on("private_message", handleContactUpdated);
     socket.on("user_list", handleContactUpdated);
     socket.on("contacts_updated", handleContactUpdated);
     return () => {
       socket.off("user_list", handleContactUpdated);
       socket.off("contacts_updated", handleContactUpdated);
+      socket.off("private_message", handleContactUpdated);
     };
   }, [user]);
 
