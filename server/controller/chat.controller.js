@@ -209,7 +209,7 @@ export const markReadMessages = async (req, res, io) => {
   const { from, to } = req.body;
   console.log("Marking messages as read from", from, "to", to);
   await Message.updateMany({ from, to, read: false }, { $set: { read: true } });
-  const fromUser = await User.findById(from);
+  const fromUser = await User.findById(to);
   io.to(fromUser.socketId).emit("contacts_updated");
   res.json({ success: true });
 };

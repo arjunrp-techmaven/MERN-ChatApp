@@ -146,7 +146,7 @@ export default function SingleChat({
     fetch(`${API_URL}/messages/mark-read`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ from: user.userId, to: toUserId }),
+      body: JSON.stringify({ from: toUserId, to: user.userId }),
     }).then((res) => res.json());
     socket.emit("login", { userId: user.userId });
 

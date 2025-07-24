@@ -263,7 +263,7 @@ export const chatContacts = async (req, res) => {
         to: userId,
         read: false, // You need a 'read' field in your Message schema
       });
-      console.log("Unread count for", contact.fullname, ":", unreadCount);
+      //   console.log("Unread count for", contact.fullname, ":", unreadCount);
       return {
         ...contact,
         lastMsg: lastMsg ? lastMsg.message : "",
