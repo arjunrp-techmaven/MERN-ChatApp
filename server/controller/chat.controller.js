@@ -205,7 +205,7 @@ export const uploadFile = async (req, res, io) => {
   }
   res.json(msg);
 };
-export const markReadMessages = async (req, res) => {
+export const markReadMessages = async (req, res, io) => {
   const { from, to } = req.body;
   await Message.updateMany({ from, to, read: false }, { $set: { read: true } });
   const fromUser = await User.findById(request.from);

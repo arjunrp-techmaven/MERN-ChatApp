@@ -39,7 +39,9 @@ export default function chatRoutes(io) {
   router.post("/upload", upload.single("file"), (req, res) =>
     uploadFile(req, res, io)
   );
-  router.patch("/messages/mark-read", markReadMessages);
+  router.patch("/messages/mark-read", (req, res) =>
+    markReadMessages(req, res, io)
+  );
 
   return router;
 }
